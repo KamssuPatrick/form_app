@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_app/screen/accueil/accueil_screen.dart';
 import 'package:form_app/screen/page_debut/utils/constant.dart';
 import 'package:form_app/screen/page_debut/widgets/LoginCard.dart';
 import 'package:form_app/screen/page_debut/widgets/SocialIcons.dart';
@@ -6,6 +7,8 @@ import 'package:form_app/screen/page_debut/widgets/my_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:form_app/screen/page_debut/widgets/registerCard.dart';
+import 'package:form_app/services/auth.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 
 
@@ -20,19 +23,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final controller = ScrollController();
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _controllerNom = TextEditingController();
   final _controllerEmail = TextEditingController();
   final _controllerPassword = TextEditingController();
   double offset = 0;
   bool passwordInvisible = true;
 
+  final AuthService _auth = AuthService();
+
   bool _validateEmail = false;
   bool _validatePassword = false;
   bool _isSelected = false;
 
+  final RoundedLoadingButtonController _btnController =
+  new RoundedLoadingButtonController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: SingleChildScrollView(
         controller: controller,
         child: Column(
@@ -57,54 +67,72 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: <Widget>[
 
                       InkWell(
-                        child: Container(
-                          width: ScreenUtil().setWidth(330),
-                          height: ScreenUtil().setHeight(100),
-                          decoration: BoxDecoration(
-                              color: kPrimaryColor,
-                              borderRadius: BorderRadius.circular(6.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: kActiveShadowColor,
-                                    offset: Offset(0.0, 8.0),
-                                    blurRadius: 8.0)
-                              ]),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
+                        child: RoundedLoadingButton(
+                      controller: _btnController,
+                      width: ScreenUtil().setWidth(330),
+                      height: ScreenUtil().setHeight(100),
+                      // height: 40,
+                      color: Color(0xFF5d74e3),
+                      child: Text("ENREGISTRER",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          )),
+                      onPressed: () async {
 
-                                if(_controllerEmail.text.isEmpty || _controllerPassword.text.isEmpty)
-                                {
-                                  if(_controllerEmail.text.isEmpty)
-                                  {
-                                    setState(() {
-                                      _validateEmail = true;
-                                    });
-                                  }
-                                  else
-                                  {
-                                    setState(() {
-                                      _validatePassword = true;
-                                    });
-                                  }
-                                }
-                                else
-                                {
-                                  //Ici
-                                }
+                        if(_controllerEmail.text.isEmpty || _controllerPassword.text.isEmpty)
+                        {
+                          showInSnackBar("Vous devez remplir tous les champs");
+                          if(_controllerEmail.text.isEmpty)
+                          {
+                            setState(() {
+                              _validateEmail = true;
+                            });
+                          }
+                          else
+                          {
+                            setState(() {
+                              _validatePassword = true;
+                            });
+                          }
+                          _btnController.reset();
+                        }
+                        else
+                        {
+                          //Ici
+                          if(_controllerPassword.text.length <= 6)
+                          {
+                            showInSnackBar("Le mot de passe doit avoir plus de 6 caractères");
+                            _btnController.reset();
+                          }
+                          else
+                            {
+                              dynamic result = await _auth
+                                  .registerWithEmailAndPassword(
+                                  _controllerEmail.text,
+                                  _controllerPassword.text, _controllerNom.text);
 
-                              },
-                              child: Center(
-                                child: Text("S'enregistrer",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: "Poppins-Bold",
-                                        fontSize: 18,
-                                        letterSpacing: 1.0)),
-                              ),
-                            ),
-                          ),
+                              if (result == null) {
+                                showInSnackBar("Une Erreur s'est produite");
+                              } else {
+
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext
+                                      context) =>
+                                          AccueilScreen()),
+                                  ModalRoute.withName('/'),
+                                );
+
+                              }
+
+                            }
+
+                        }
+                      }
+
+
                         ),
                       )
                     ],
@@ -120,6 +148,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  void showInSnackBar(String value) {
+    _scaffoldKey.currentState!.showSnackBar(new SnackBar(content: new Text(value, style: TextStyle(color: Color(0xFF5d74e3), fontSize: 18),)));
   }
 
   Widget RegisterCard()
