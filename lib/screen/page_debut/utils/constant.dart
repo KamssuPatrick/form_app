@@ -47,6 +47,8 @@ final kTitleTextStyle = TextStyle(
   fontWeight: FontWeight.w600,
 );
 
+const String USERS_COLLECTION = "users";
+
 BoxDecoration avatarDecoration = BoxDecoration(
     shape: BoxShape.circle,
     color: kAppPrimaryColor,

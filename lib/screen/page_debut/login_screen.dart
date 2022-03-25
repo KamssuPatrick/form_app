@@ -290,19 +290,5 @@ class _loginScreenState extends State<loginScreen> {
     );
   }
 
-  String? get _errorText {
-    // at any time, we can get the text from _controller.value.text
-    final textEmail = _controllerEmail!.value.text;
-    final textPassword = _controllerPassword!.value.text;
-    // Note: you can do your own custom validation here
-    // Move this logic this outside the widget for more testable code
-    if (textEmail.isEmpty) {
-      return 'Ne peut être vide';
-    }
-    if (textPassword.length < 6) {
-      return 'Mot de passe trop court';
-    }
-    // return null if the text is valid
-    return null;
-  }
+
 }

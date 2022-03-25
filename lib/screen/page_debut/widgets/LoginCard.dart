@@ -4,11 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class loginCard extends StatelessWidget {
   bool passwordInvisible = true;
 
-  final TextEditingController? controllerEmail;
-  final TextEditingController? controllerPassword;
+  final TextEditingController controllerEmail;
+  final TextEditingController controllerPassword;
   // final String? errorText;
 
-   loginCard({Key? key, this.controllerEmail, this.controllerPassword}) : super(key: key);
+   loginCard({Key key, this.controllerEmail, this.controllerPassword}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -84,10 +84,10 @@ class loginCard extends StatelessWidget {
     );
   }
 
-  String? get _errorText {
+  String get _errorText {
     // at any time, we can get the text from _controller.value.text
-    final textEmail = controllerEmail!.value.text;
-    final textPassword = controllerPassword!.value.text;
+    final textEmail = controllerEmail.value.text;
+    final textPassword = controllerPassword.value.text;
     // Note: you can do your own custom validation here
     // Move this logic this outside the widget for more testable code
     if (textEmail.isEmpty) {

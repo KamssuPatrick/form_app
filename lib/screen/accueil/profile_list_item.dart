@@ -3,12 +3,12 @@ import 'package:form_app/screen/page_debut/utils/constant.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class ProfileListItem extends StatelessWidget {
-  final IconData? icon;
-  final String? text;
+  final IconData icon;
+  final String text;
   final bool hasNavigation;
 
   const ProfileListItem({
-    Key? key,
+    Key key,
     this.icon,
     this.text,
     this.hasNavigation = true,
@@ -38,7 +38,7 @@ class ProfileListItem extends StatelessWidget {
           ),
           SizedBox(width: 15),
           Text(
-            this.text!,
+            this.text,
             style: kTitleTextStyle.copyWith(
               fontWeight: FontWeight.w500,
               fontFamily: "Poppins"

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SocialIcon extends StatelessWidget {
-  final Color? color;
-  final IconData? iconData;
+  final Color color;
+  final IconData iconData;
   final Function onPressed;
-  SocialIcon({this.color, this.iconData, required this.onPressed});
+  SocialIcon({this.color, this.iconData,  this.onPressed});
   @override
   Widget build(BuildContext context) {
     return new Padding(

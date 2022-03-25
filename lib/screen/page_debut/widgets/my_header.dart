@@ -4,13 +4,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../utils/constant.dart';
 
 class MyHeader extends StatefulWidget {
-  final String? image;
-  final String? textTop;
-  final String? textBottom;
-  final double? offset;
-  final bool? avecBack;
+  final String image;
+  final String textTop;
+  final String textBottom;
+  final double offset;
+  final bool avecBack;
   const MyHeader(
-      {Key? key, this.image, this.textTop, this.textBottom, this.offset, this.avecBack})
+      {Key key, this.image, this.textTop, this.textBottom, this.offset, this.avecBack})
       : super(key: key);
 
   @override
@@ -47,16 +47,16 @@ class _MyHeaderState extends State<MyHeader> {
               child: Stack(
                 children: <Widget>[
                   Positioned(
-                    top: (widget.offset! < 0) ? 0 : widget.offset,
+                    top: (widget.offset < 0) ? 0 : widget.offset,
                     child: SvgPicture.asset(
-                      widget.image!,
+                      widget.image,
                       width: 270,
                       fit: BoxFit.fitWidth,
                       alignment: Alignment.bottomLeft,
                     ),
                   ),
                   Positioned(
-                    top: 120 - widget.offset! / 2,
+                    top: 120 - widget.offset / 2,
                     left: 140,
                     child: Text(
                       "${widget.textTop} \n${widget.textBottom}",
@@ -66,7 +66,7 @@ class _MyHeaderState extends State<MyHeader> {
                     ),
                   ),
 
-                  widget.avecBack! ? Positioned(
+                  widget.avecBack ? Positioned(
                        bottom: 90,
                        left: 10,
                        child: GestureDetector(

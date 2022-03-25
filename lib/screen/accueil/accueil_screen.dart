@@ -6,7 +6,7 @@ import 'package:form_app/screen/page_debut/widgets/my_header.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class AccueilScreen extends StatefulWidget {
-  const AccueilScreen({Key? key}) : super(key: key);
+  const AccueilScreen({Key key}) : super(key: key);
 
   @override
   _AccueilScreenState createState() => _AccueilScreenState();

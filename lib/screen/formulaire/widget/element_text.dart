@@ -8,7 +8,7 @@ class ElementTextItem extends StatelessWidget {
 
   const ElementTextItem({
     // this.icon,
-    required this.text,
+     this.text,
   }) ;
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PremierePage extends StatefulWidget {
-  const PremierePage({Key? key}) : super(key: key);
+  const PremierePage({Key key}) : super(key: key);
 
   @override
   _PremierePageState createState() => _PremierePageState();

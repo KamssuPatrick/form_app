@@ -13,7 +13,7 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({Key key}) : super(key: key);
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -114,6 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                               if (result == null) {
                                 showInSnackBar("Une Erreur s'est produite");
+                                _btnController.reset();
                               } else {
 
                                 Navigator.pushAndRemoveUntil(
@@ -151,7 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState!.showSnackBar(new SnackBar(content: new Text(value, style: TextStyle(color: Color(0xFF5d74e3), fontSize: 18),)));
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(value, style: TextStyle(color: Color(0xFF5d74e3), fontSize: 18),)));
   }
 
   Widget RegisterCard()

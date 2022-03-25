@@ -3,11 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class registerCard extends StatefulWidget {
     final TextEditingController controllerNom;
-    final TextEditingController? controllerEmail;
-    final TextEditingController? controllerPassword;
+    final TextEditingController controllerEmail;
+    final TextEditingController controllerPassword;
 
 
-   registerCard({Key? key, required this.controllerNom, this.controllerEmail, this.controllerPassword}) : super(key: key);
+   registerCard({Key key,  this.controllerNom, this.controllerEmail, this.controllerPassword}) : super(key: key);
   @override
   State<registerCard> createState() => _registerCardState();
 }
