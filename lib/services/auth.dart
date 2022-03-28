@@ -76,16 +76,41 @@ class AuthService {
         FirebaseUser user = result.user;
         final prefs = await SharedPreferences.getInstance();
 
-        await DBRef.child("users")
-            .child(user.uid)
-            .once()
-            .then((DataSnapshot snapshot) {
-          // print('Data : ${snapshot.value}');
-          typ = snapshot.value["type"];
-          prefs.setString("nom_prenom", snapshot.value["nom_prenom"]);
-          prefs.setString("status", snapshot.value["status"]);
-        });
+        // await DBRef.child("users")
+        //     .child(user.uid)
+        //     .once()
+        //     .then((DataSnapshot snapshot) {
+        //   // print('Data : ${snapshot.value}');
+        //   typ = snapshot.value["type"];
+        //   prefs.setString("nom_prenom", snapshot.value["nom_prenom"]);
+        //   prefs.setString("status", snapshot.value["status"]);
+        // });
 
+
+        await Firestore.instance
+            .collection("users")
+            .where("email", isEqualTo: email)
+            .getDocuments()
+            .then((QuerySnapshot snapshot) {
+          snapshot.documents.forEach((f) async {
+            print(' ici ${f.data}}');
+
+
+              // prefs.setInt("dateDeCreation", f.data['dateDeCreation']);
+              // prefs.setString("profilPic", f.data['profilPic']);
+              prefs.setString("nom_prenom", f.data["nom_prenom"]);
+              prefs.setString("email", f.data["email"]);
+              prefs.setString("createdAt", f.data["createdAt"]);
+              prefs.setString("statut", f.data["statut"]);
+              prefs.setString("uid", f.data["uid"]);
+              prefs.setString("userDocument", f.documentID);
+
+          });
+        });
+        // NotificationController.instance.takeFCMTokenWhenAppLaunch();
+        // prefs.setString("UserUid", user.uid);
+        prefs.setString("email", user.email);
+        prefs.setString("userUid", user.uid);
 
 
         // prefs.setString("UserUid", FirebaseAuth.instance.currentUser.uid);
@@ -128,15 +153,22 @@ class AuthService {
         "createdAt": DateTime.now().millisecondsSinceEpoch.toString(),
       };
 
+      prefs.setString("nom_prenom", nomUser);
+      prefs.setString("email", email);
+      prefs.setString("createdAt", DateTime.now().millisecondsSinceEpoch.toString());
+      prefs.setString("statut", "Employe");
+      prefs.setString("uid", result.user.uid);
+
       await Firestore.instance
           .collection("users")
           .add(userDataMap)
           .then((value) async {
-        prefs.setString("userId", value.documentID);
+        prefs.setString("userDocument", value.documentID);
+
         await Firestore.instance
             .collection("users")
             .document(value.documentID)
-            .updateData({"userId": value.documentID}).catchError((e) {
+            .updateData({"userDocument": value.documentID}).catchError((e) {
           print("erreure  ${e.toString()}");
         });
       }).catchError((e) {
@@ -157,40 +189,20 @@ class AuthService {
   }
 
 
-  Future registerWithEmailAndPasswordNewUser(
-      String email, password, nomUser) async {
-    // print("register $email $password + $username");
-    try {
-      var result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password)
-      // ignore: missing_return
-//          .then((value) {
-//        print(value.user.uid);
-//        this.writeUserDataSignUp(value.user.uid, username, email);
-          ;
-      print("register result 12 $result.");
-      FirebaseUser user = result.user;
 
-      this.writeUserDataSignUpNewUser(result.user.uid, email, nomUser);
-
-      print("register result $user");
-//      this.signInWithEmailAndPassword(email, password);
-      return _userFromFirebaseUser(user);
-    } catch (e) {
-      print("catch " + e.toString());
-      return null;
-    }
-  }
 
 
   // sign out
   Future signOut() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      prefs.setString("UserUid", "");
+      prefs.setString("userUid", "");
       prefs.setString("email", "");
       prefs.setString("statut", "");
       prefs.setString("nom_prenom", "");
+      prefs.setString("userDocument", "");
+      prefs.setString("userId", "");
+      prefs.setString("createdAt", "");
       return await _auth.signOut();
     } catch (e) {
       print(e.toString());
@@ -203,16 +215,16 @@ class AuthService {
   Future writeUserDataSignUp(
       String uid, String email, String nomUser) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("UserUid", uid);
+    prefs.setString("userUid", uid);
     prefs.setString("email", email);
      var dateNow = DateTime.now().millisecondsSinceEpoch;
-    await DBRef.child('users').child(uid).set({
-      "ID" : uid,
-     "statut": "Employe",
-      "nom_prenom" : nomUser,
-      "email": email,
-      "dateEnregistrement" : dateNow
-    });
+    // await DBRef.child('users').child(uid).set({
+    //   "ID" : uid,
+    //  "statut": "Employe",
+    //   "nom_prenom" : nomUser,
+    //   "email": email,
+    //   "dateEnregistrement" : dateNow
+    // });
   }
 
   Future writeUserDataSignUpNewUser(
@@ -230,94 +242,7 @@ class AuthService {
     });
   }
 
-  registerConciergeWithEmailAndPassword(String email, password,
-      Map<dynamic, dynamic> dataConcierge, String conciergeKey) async {
-    // print("register $email $password + $username");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    try {
-      AuthResult result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      // FirebaseUser user = result.user;
-      // this.writeUserDataSignUp(result.user.uid, dataConcierge, email);
 
-      await DBRef.child('users').child(result.user.uid).set({
-        "profilPic": dataConcierge["imageConcierge"],
-        "type": "Concierge",
-        "email": email,
-        "uidimmeuble": dataConcierge["uidImmeuble"],
-        "conciergeKey": conciergeKey,
-        "uidAdmin": dataConcierge["uid"],
-        "nom": dataConcierge["nom"],
-        "prenom": dataConcierge["prenom"]
-      });
 
-      print("register result 12 ${dataConcierge["uid"]}.");
-      print("register result 12 ${conciergeKey}.");
-      await DBRef.child('Concierge')
-          .child(dataConcierge["uid"])
-          .child(conciergeKey)
-          .update({
-        "login": "oui",
-        "email": email,
-        "uidConcerge": result.user.uid
-      }).catchError((e) {
-        print("erreur $e");
-      });
 
-      // print("register result $user");
-//      this.signInWithEmailAndPassword(email, password);
-      return "success";
-    } catch (e) {
-      print("catch " + e.toString());
-      return null;
-    }
-  }
-
-  registerLocataireWithEmailAndPassword(
-      String email,
-      password,
-      String locataireKey,
-      String adminUid,
-      Map<dynamic, dynamic> dataLocataire) async {
-    // print("register $email $password + $username");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    try {
-      AuthResult result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      // FirebaseUser user = result.user;
-      // this.writeUserDataSignUp(result.user.uid, dataConcierge, email);
-
-      await DBRef.child('users').child(result.user.uid).set({
-        "profilPic": dataLocataire["imageLocataire"],
-        "type": "Locataire",
-        "email": email,
-        "uidLogis": dataLocataire["uidLogis"],
-        "locaraireKey": locataireKey,
-        "uidAdmin": adminUid,
-        "nom": dataLocataire["nom"],
-        "profession": dataLocataire["profession"],
-        "telephone": dataLocataire["telephone"],
-        "autre": dataLocataire["autre"],
-        "prenom": dataLocataire["prenom"]
-      });
-
-      await DBRef.child('Locataire')
-          .child(adminUid)
-          .child(locataireKey)
-          .update({
-        "login": "oui",
-        "email": email,
-        "uidLocataire": result.user.uid
-      }).catchError((e) {
-        print("erreur $e");
-      });
-
-      // print("register result $user");
-//      this.signInWithEmailAndPassword(email, password);
-      return "success";
-    } catch (e) {
-      print("catch " + e.toString());
-      return null;
-    }
-  }
 }
