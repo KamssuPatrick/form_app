@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_app/screen/accueil/accueil_screen.dart';
 import 'package:survey_kit/survey_kit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,8 @@ class FormulaireScreen extends StatefulWidget {
 class _FormulaireScreenState extends State<FormulaireScreen> {
   double offset = 0;
   List<String> _values = [];
+  List<String> _valuesResult = [];
+  List<String> _valuesResultApres = [];
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _textEditingController = TextEditingController();
 
@@ -45,6 +48,8 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
     });
   }
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   /// This is just an example for using `TextEditingController` to manipulate
   /// the the `TextField` just like a normal `TextField`.
   _onPressedModifyTextField() {
@@ -67,6 +72,13 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
 
   }
 
+  _displaySnackBar(BuildContext context) {
+    final snackBar = SnackBar(
+        content:
+        Text("Formulaire Enregistré avec succès !"));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
   getUserInfo () async
   {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -84,6 +96,7 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
       // MaterialApp(
       // home:
       Scaffold(
+        key: _scaffoldKey,
         body: Container(
           color: Colors.white,
           child: Align(
@@ -97,7 +110,9 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
                   final task = snapshot.data;
                   return SurveyKit(
                     surveyController: SurveyController(
-                      onCloseSurvey: (context, resultFunction) => print('Closed'),
+                      onCloseSurvey: (context, resultFunction) {
+                        Navigator.pop(context);
+                      },
                     ),
                     onResult: (SurveyResult result) async {
                       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -123,239 +138,93 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
                       result.results.forEach((element) {
                         // print(
                         //     "logTag answer ${element.results.first.valueIdentifier}");
-                        print(
-                            "logTag answer****** ${element.results.first.id.id}");
-                        print(
-                            "logTag answer******* ${element.results.first.result}");
+                        // print(
+                        //     "logTag answer****** ${element.results.first.id.id}");
+                        // print(
+                        //     "logTag answer******* ${element.results.first.result}");
 
                         setState(() {
-                          if(i == 4)
-                            {
-                              telephone_entreprise = element.results.first.valueIdentifier;
-                              print("______________telephone${element.results.first.valueIdentifier}");
-                            }
-                          if(i == 0)
-                            {
-                              print("______________ee${element.results.first.valueIdentifier}");
-                            }
-                          else if(i == 1)
-                            {
-                              nom_entreprise = element.results.first.valueIdentifier;
-                              print("______________nom${element.results.first.valueIdentifier}");
-                            }
-                          else if( i== 2)
-                            {
-                              print("______________quartier${element.results.first.valueIdentifier}");
-                              quartier_entreprise = element.results.first.valueIdentifier;
-                            }
-                          else if (i == 3)
-                            {
-                              print("______________localisation${element.results.first.valueIdentifier}");
-                              localisation_entreprise = element.results.first.valueIdentifier;
-                            }
-                          else if( i== 5)
-                            {
-                              print("______________style${element.results.first.valueIdentifier}");
-                              style_vestimentaire = element.results.first.valueIdentifier;
-                            }
-                          else if (i==6)
-                            {
-                              type_vetement = element.results.first.valueIdentifier;
-                              print("______________type${element.results.first.valueIdentifier}");
-                            }
-                          else if(type_vetement == "Autre")
-                            {
-
-                              if(i== 7)
-                                {
-                                  vetement_autre = element.results.first.valueIdentifier;
-                                }
-                              else if(i == 8)
-                                {
-                                  ou_achat_produit = element.results.first.valueIdentifier;
-                                }
-                              else if(i == 9)
-                                {
-                                  moyen_approvisionnement = element.results.first.valueIdentifier;
-                                }
-                              else if( i == 10)
-                                {
-                                  satisfaction_prix = element.results.first.valueIdentifier;
-                                }
-                              else if( i == 11)
-                                {
-                                  modalite_paiement = element.results.first.valueIdentifier;
-                                }
-                              else if( i == 12)
-                                {
-                                  echelle_satisfaction = element.results.first.valueIdentifier;
-                                }
-                              else if( i == 13)
-                                {
-                                  commentaire_a_faire = element.results.first.valueIdentifier;
-                                }
-                              else if(i == 14 && commentaire_a_faire == "Oui")
-                              {
-                                commentaire = element.results.first.valueIdentifier;
-                              }
-                              else if(i == 14 && commentaire_a_faire == "Non")
-                              {
-                                commentaire_commercial = element.results.first.valueIdentifier;
-                              }
-                              else if(commentaire_a_faire == "Oui" && i == 15)
-                              {
-                                commentaire_commercial = element.results.first.valueIdentifier;
-                              }
-                            }
-                          // else if (type_vetement != "Autre")
-                          //   {
-                           if(i == 7)
-                          {
-                            ou_achat_produit = element.results.first.valueIdentifier;
-                            print("______________ouachat${element.results.first.valueIdentifier}");
-                          }
-                          else if( i == 8 && ou_achat_produit != "Autres")
-                          {
-                            moyen_approvisionnement = element.results.first.valueIdentifier;
-                            print("______________moyen${element.results.first.valueIdentifier}");
-                          }
-                          else if( i == 9 && ou_achat_produit != "Autres")
-                          {
-                            satisfaction_prix = element.results.first.valueIdentifier;
-                            print("______________satis${element.results.first.valueIdentifier}");
-                          }
-                          else if( i== 10 && ou_achat_produit != "Autres")
-                          {
-                            modalite_paiement = element.results.first.valueIdentifier;
-                            print("______________moda${element.results.first.valueIdentifier}");
-                          }
-                          else if( i == 11 && ou_achat_produit != "Autres")
-                          {
-                            echelle_satisfaction = element.results.first.valueIdentifier;
-                            print("______________eche${element.results.first.valueIdentifier}");
-                          }
-                          else if(i == 12 && ou_achat_produit != "Autres")
-                          {
-                            commentaire_a_faire = element.results.first.valueIdentifier;
-                            print("______________commentairea${element.results.first.valueIdentifier}");
-                          }
-                          else if(i == 13 && commentaire_a_faire == "Oui" && ou_achat_produit != "Autres")
-                          {
-                            commentaire = element.results.first.valueIdentifier;
-                          }
-                          else if(i == 13 && commentaire_a_faire == "Non" && ou_achat_produit != "Autres")
-                          {
-                            commentaire_commercial = element.results.first.valueIdentifier;
-                          }
-                          else if(commentaire_a_faire == "Oui" && i == 14 && ou_achat_produit != "Autres")
-                          {
-                            commentaire_commercial = element.results.first.valueIdentifier;
-                          }
-
-
-                           else if( i == 8 && ou_achat_produit == "Autres")
-                           {
-                             ou_achat_produit_autre = element.results.first.valueIdentifier;
-                             print("______________autre_ouachat${element.results.first.valueIdentifier}");
-                           }
-                           else if( i== 9 && ou_achat_produit == "Autres")
-                           {
-                             moyen_approvisionnement = element.results.first.valueIdentifier;
-                             print("______________autre_moyen${element.results.first.valueIdentifier}");
-                           }
-                           else if( i == 10 && ou_achat_produit == "Autres")
-                           {
-                             satisfaction_prix = element.results.first.valueIdentifier;
-                             print("______________autre_satisfaction${element.results.first.valueIdentifier}");
-                           }
-                           else if(i == 11 && ou_achat_produit == "Autres")
-                           {
-                             modalite_paiement = element.results.first.valueIdentifier;
-                             print("______________autre_modalite${element.results.first.valueIdentifier}");
-                           }
-                           else if(i == 12 && ou_achat_produit == "Autres")
-                           {
-                             echelle_satisfaction = element.results.first.valueIdentifier;
-                             print("______________autre_echelle${element.results.first.valueIdentifier}");
-                           }
-                           else if(i == 13 && ou_achat_produit == "Autres")
-                           {
-                             commentaire_a_faire = element.results.first.valueIdentifier;
-                             print("______________autre_commentaiteA${element.results.first.valueIdentifier}");
-                           }
-                           else if(i == 14 && commentaire_a_faire == "Oui" && ou_achat_produit == "Autres")
-                           {
-                             commentaire = element.results.first.valueIdentifier;
-                             print("______________autre_commentaite${element.results.first.valueIdentifier}");
-
-                           }
-                           else if(i == 15 && commentaire_a_faire == "Non" && ou_achat_produit == "Autres")
-                           {
-                             commentaire_commercial = element.results.first.valueIdentifier;
-                             print("______________autre_commentaiteCN${element.results.first.valueIdentifier}");
-
-                           }
-                           else if(commentaire_a_faire == "Oui" && i == 16 && ou_achat_produit == "Autres")
-                           {
-                             commentaire_commercial = element.results.first.valueIdentifier;
-                             print("______________autre_commentaiteCO${element.results.first.valueIdentifier}");
-
-                           }
-
-                           else if(commentaire_a_faire == "Oui" && i == 16 && ou_achat_produit == "Autres")
-                           {
-                             commentaire_commercial = element.results.first.valueIdentifier;
-                             print("______________autre_commentaiteCO2${element.results.first.valueIdentifier}");
-
-                           }
-
-                            // }
-
-
-                          // else if(i == 13 && commentaire_a_faire == "Oui")
-                          //   {
-                          //     commentaire = element.results.first.valueIdentifier;
-                          //     print("______________commentaire${element.results.first.valueIdentifier}");
-                          //   }
-                          // else if( i== 14)
-                          //   {
-                          //     commentaire_commercial = element.results.first.valueIdentifier;
-                          //     print("______________commentaireC${element.results.first.valueIdentifier}");
-                          //   }
-
+                          _valuesResult.add(element.results.first.valueIdentifier);
                         });
+
                         i++;
                       });
 
+                      print("logTag answer******* ${_valuesResult.length}");
+                      print("logTag answer******* ${_valuesResult}");
+
+                      setState(() {
+                        _valuesResult.removeWhere((element) => element == "Autres");
+                        for(int i=0; i < _valuesResult.length; i++)
+                          {
+                            if(i == 13)
+                              {
+                                // _valuesResult[i] = _valuesResult[i++];
+                                _valuesResultApres.add(_valuesResult[i+1]);
+
+                                 if(_valuesResult[13] == "Client satisfait")
+                                   {
+                                     _valuesResult.insert(14, "");
+                                   }
+                                 else
+                                   {
+                                   _valuesResult.insert(14, _valuesResult[14]);
+                                 }
+                              }
+
+                          }
+
+                      });
+
+                      // for(int i=0; i < _valuesResult.length; i++)
+                      //   {
+                      //     if(_valuesResult[i] == "Autres")
+                      //       {
+                      //         // _valuesResult[i] = _valuesResult[i++];
+                      //         _valuesResultApres.add(_valuesResult[i+1]);
+                      //       }
+                      //     else
+                      //       {
+                      //         _valuesResultApres.add(_valuesResult[i]);
+                      //       }
+                      //   }
+
+                      print("logTag answer******* ${_valuesResult.length}");
+                      print("logTag answer******* ${_valuesResult}");
+                      // print("logTag answer******* ${_valuesResultApres.length}");
+                      // print("logTag answer******* ${_valuesResultApres}");
+
 
                       Map<String, dynamic> formulaireMap = {
-                        "nom_societe": nom_entreprise,
-                        "quartier_entreprise": quartier_entreprise,
-                        "localisation_entreprise": localisation_entreprise,
-                        "telephone_entreprise": telephone_entreprise,
-                        "style_vestimentaire": style_vestimentaire,
-                        "type_vetement": type_vetement,
-                        "ou_achat_produit": ou_achat_produit,
-                        "moyen_approvisionnement": moyen_approvisionnement,
-                        "satisfaction_prix": satisfaction_prix,
-                        "modalite_paiement": modalite_paiement,
-                        "echelle_satisfaction": echelle_satisfaction,
-                        "commentaire_a_faire": commentaire_a_faire,
-                        "commentaire": commentaire,
-                        "ou_achat_produit_autre": ou_achat_produit_autre,
-                        "commentaire_commercial": commentaire_commercial,
+                        "nom_societe": _valuesResult[1],
+                        "quartier_entreprise": _valuesResult[2],
+                        "localisation_entreprise": _valuesResult[3],
+                        "telephone_entreprise": _valuesResult[4],
+                        "style_vestimentaire": _valuesResult[5],
+                        "type_vetement": _valuesResult[6],
+                        "ou_achat_produit": _valuesResult[7],
+                        "moyen_approvisionnement": _valuesResult[8],
+                        "satisfaction_prix": _valuesResult[9],
+                        "modalite_paiement": _valuesResult[10],
+                        "echelle_satisfaction": _valuesResult[11],
+                        // "commentaire_a_faire": _valuesResult[12],
+                        "commentaire_client": _valuesResult[12],
+                        "commentaire_commercial": _valuesResult[13],
+                        "commentaire_commercial_text": _valuesResult[14],
                         "userUid": userUid,
-                        "vetement_autre": vetement_autre,
                         "userDocument": userDocument,
                         "email": userEmail,
                         'temps_ajout': DateTime.now().millisecondsSinceEpoch,
                       };
 
 
+
                       Firestore.instance
                           .collection("formulaire")
                           .add(formulaireMap).then((value) {
+                        // Fluttertoast.showToast(msg: "Formulaire Enregistré avec succès !", toastLength: Toast.LENGTH_LONG);
 
+                        _displaySnackBar(context);
                       })
                           .catchError((e) {
                         print(e.toString());
@@ -564,7 +433,7 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
               TextChoice(text: 'Haut de vêtements', value: 'Haut'),
               TextChoice(text: 'Bas de vêtements', value: 'Bas'),
               TextChoice(text: 'Vêtements une pièce', value: 'Une pièce'),
-              TextChoice(text: 'Autre', value: 'Autre'),
+              TextChoice(text: 'Autre', value: 'Autres'),
             ],
           ),
         ),
@@ -629,7 +498,7 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
         QuestionStep(
           title: 'Modalités',
           text: 'Quelles sont les modalités de paiement de votre fournisseur?',
-          answerFormat: const MultipleChoiceAnswerFormat(
+          answerFormat: const SingleChoiceAnswerFormat(
             textChoices: [
               TextChoice(
                   text: 'Paiements par tranche',
@@ -659,10 +528,10 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
           isOptional: true,
           answerFormat: const SingleChoiceAnswerFormat(
             textChoices: [
-              TextChoice(text: 'Oui', value: 'Oui'),
+              TextChoice(text: 'Oui', value: 'Autres'),
               TextChoice(text: 'Non', value: 'Non'),
             ],
-            defaultSelection: TextChoice(text: 'Oui', value: 'Oui'),
+            defaultSelection: TextChoice(text: 'Oui', value: 'Autres'),
           ),
         ),
         QuestionStep(
@@ -707,7 +576,7 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
       navigationRule: ConditionalNavigationRule(
         resultToStepIdentifierMapper: (input) {
           print('hhh ${input.toString()}');
-          if (input.contains('Autre')) {
+          if (input.contains('Autres')) {
             return task.steps[7].stepIdentifier;
 //            case input.contains('Autre'):
 //              return task.steps[7].stepIdentifier;

@@ -6,8 +6,16 @@ import 'package:form_app/screen/statistiques/view_models/view_models.dart';
 import 'package:form_app/screen/wrapper.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+Future  main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initialization(null);
   runApp(const MyApp());
+}
+
+Future initialization(BuildContext context) async {
+  await Future.delayed(Duration(seconds: 3));
 }
 
 class MyApp extends StatelessWidget {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:form_app/screen/accueil/profile_list_item.dart';
 import 'package:form_app/screen/donnee_analytique/analitique_screen.dart';
 import 'package:form_app/screen/formulaire/formulaire_screen.dart';
+import 'package:form_app/screen/historique_questionnaire/historique_screen.dart';
 import 'package:form_app/screen/page_debut/login_screen.dart';
 import 'package:form_app/screen/page_debut/widgets/my_header.dart';
 import 'package:form_app/screen/statistiques/statistiques_screen.dart';
@@ -103,9 +104,21 @@ class _ProfileListItemsState extends State<ProfileListItems> {
               );
             },
           ),
-          ProfileListItem(
-            icon: LineAwesomeIcons.history,
-            text: 'Historique de réponse',
+          GestureDetector(
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return HistoriqueFormScreen();
+                  },
+                ),
+              );
+            },
+            child: ProfileListItem(
+              icon: LineAwesomeIcons.history,
+              text: 'Historique de réponse',
+            ),
           ),
           statut == "Admin" ? GestureDetector(
             onTap: () {
