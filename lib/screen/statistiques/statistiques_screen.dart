@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:form_app/screen/detail_autre/detail_autre_screen.dart';
 // import 'package:flutter_banking_app/json/transactions.dart';
 // import 'package:flutter_banking_app/repo/repository.dart';
 // import 'package:flutter_banking_app/utils/layouts.dart';
@@ -27,6 +28,12 @@ class Stats extends StatefulWidget {
 class _StatsState extends State<Stats> {
 
   bool showAvg = false;
+
+
+  List<Map<String, dynamic>> listTypeVetementAutre = [];
+  List<Map<String, dynamic>> listLieuAchatAutre = [];
+  List<Map<String, dynamic>> listCommentaireClient = [];
+  List<Map<String, dynamic>> listCommentaireCommercial = [];
 
   int nombreHommeSV =0;
   int nombreFemmeSV =0;
@@ -99,10 +106,9 @@ class _StatsState extends State<Stats> {
           implyLeading: true,
           context: context,
           hasAction: true),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance
-            .collection('formulaire')
-            .snapshots(),
+      body: FutureBuilder<QuerySnapshot>(
+        future: Firestore.instance
+            .collection('formulaire').getDocuments(),
         builder: (context, snapshot)
         {
 
@@ -127,6 +133,60 @@ class _StatsState extends State<Stats> {
                 height: 200,),
             );
           }
+
+           nombreHommeSV =0;
+           nombreFemmeSV =0;
+           nombreEnfantSV =0;
+           nombreMixteSV =0;
+
+           nombreVetementSoiree = 0;
+           nombreVetementSport = 0;
+           nombreVetementProfessionnel = 0;
+           nombreVetementHaut = 0;
+           nombreVetementBas = 0;
+           nombreVetementPiece = 0;
+           nombreVetementAutre = 0;
+
+
+           nombrePaysCHine = 0;
+           nombrePaysEurope = 0;
+           nombrePaysDubai = 0;
+           nombrePaysTurqui = 0;
+           nombrePaysAutres = 0;
+
+
+           nombreMoyerDeplacement = 0;
+           nombreMoyerPlace = 0;
+
+
+           nombreSatisfactionOui = 0;
+           nombreSatisfactionNon = 0;
+
+
+           nombreModalitePaiementTranche = 0;
+           nombreModalitePaiementTotale = 0;
+           nombreModalitePaiementCredit = 0;
+
+
+           nombreEchelle0 = 0;
+           nombreEchelle1 = 0;
+           nombreEchelle2 = 0;
+           nombreEchelle3 = 0;
+           nombreEchelle4 = 0;
+           nombreEchelle5 = 0;
+           nombreEchelle6 = 0;
+           nombreEchelle7 = 0;
+           nombreEchelle8 = 0;
+           nombreEchelle9 = 0;
+           nombreEchelle10 = 0;
+
+
+           nombreCommentaireOui = 0;
+           nombreCommentaireNon = 0;
+
+           nombreCommentaireComercialSatisfait = 0;
+           nombreCommentaireComercialNonSatisfait = 0;
+           nombreCommentaireComercialDifficile = 0;
 
 
           // Statistiques Styles Vestimentaires
@@ -187,7 +247,49 @@ class _StatsState extends State<Stats> {
 
             else
             {
-              nombreVetementAutre = nombreVetementAutre +1;
+              var part = element["type_vetement"].toString().split(",");
+
+              if(part.length >= 2)
+                {
+                  for(int i=0; i < part.length; i++)
+                    {
+                      if(part[i] == "Soirée")
+                      {
+                        nombreVetementSoiree = nombreVetementSoiree +1;
+                      }
+
+                      else if(part[i] == "Sport")
+                      {
+                        nombreVetementSport = nombreVetementSport +1;
+                      }
+
+                      else if(part[i] == "Professionnel")
+                      {
+                        nombreVetementProfessionnel = nombreVetementProfessionnel +1;
+                      }
+
+                      else if(part[i] == "Haut")
+                      {
+                        nombreVetementHaut = nombreVetementHaut +1;
+                      }
+
+                      else if(part[i] == "Bas")
+                      {
+                        nombreVetementBas = nombreVetementBas +1;
+                      }
+
+                      else if(part[i] == "Une pièce")
+                      {
+                        nombreVetementPiece = nombreVetementPiece +1;
+                      }
+                    }
+                }
+              else
+                {
+                  listTypeVetementAutre.add(element.data);
+                  nombreVetementAutre = nombreVetementAutre +1;
+                }
+
             }
           });
 
@@ -216,6 +318,7 @@ class _StatsState extends State<Stats> {
 
             else
             {
+              listLieuAchatAutre.add(element.data);
               nombrePaysAutres = nombrePaysAutres +1;
             }
           });
@@ -336,6 +439,7 @@ class _StatsState extends State<Stats> {
             }
             else
               {
+                listCommentaireClient.add(element.data);
                 nombreCommentaireOui = nombreCommentaireOui +1;
               }
 
@@ -352,15 +456,20 @@ class _StatsState extends State<Stats> {
 
             if(element["commentaire_commercial"] == "Client difficile")
             {
+              listCommentaireCommercial.add(element.data);
               nombreCommentaireComercialDifficile = nombreCommentaireComercialDifficile +1;
             }
 
             if(element["commentaire_commercial"] == "Client non satisfait")
             {
+              listCommentaireCommercial.add(element.data);
               nombreCommentaireComercialNonSatisfait = nombreCommentaireComercialNonSatisfait +1;
             }
 
           });
+
+
+
 
           return ListView(
             padding: const EdgeInsets.all(15),
@@ -581,234 +690,253 @@ class _StatsState extends State<Stats> {
 
                     // Type de vetements
                     FittedBox(
-                      child: SizedBox(
-                        height: size.height * 0.60,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: size.width * 0.67,
-                              padding: const EdgeInsets.fromLTRB(16, 10, 0, 10),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.horizontal(
-                                    left: Radius.circular(15)),
-                                color: Styles.greenColor,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Vêtements de soirée',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreVetementSoiree}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreVetementSoiree * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Vêtements de sport',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreVetementSport}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-
-
-
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreVetementSport * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Vêtements de professionnel',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreVetementProfessionnel}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-
-
-
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreVetementProfessionnel * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Haut de vêtements',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreVetementHaut}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreVetementHaut * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Bas de vêtements',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreVetementBas}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreVetementBas * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Vêtements une pièce',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreVetementPiece}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreVetementPiece * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Autre',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreVetementAutre}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreVetementAutre * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return DetailAutreScreen(
+                                  title: "Type de vêtements",
+                                  data: listTypeVetementAutre,
+                                  indicateur: "type_vetement",
+                                );
+                              },
                             ),
-                            Container(
-                              width: size.width * 0.27,
-                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.horizontal(
-                                    right: Radius.circular(15)),
-                                color: Styles.yellowColor,
+                          );
+                        },
+                        child: SizedBox(
+                          height: size.height * 0.60,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: size.width * 0.67,
+                                padding: const EdgeInsets.fromLTRB(16, 10, 5, 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(15)),
+                                  color: Styles.greenColor,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Vêtements de soirée',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreVetementSoiree}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreVetementSoiree * 100)/(nombreVetementAutre + nombreVetementPiece + nombreVetementBas + nombreVetementHaut + nombreVetementProfessionnel + nombreVetementSport + nombreVetementSoiree)} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Vêtements de sport',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreVetementSport}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreVetementSport * 100)/(nombreVetementAutre + nombreVetementPiece + nombreVetementBas + nombreVetementHaut + nombreVetementProfessionnel + nombreVetementSport + nombreVetementSoiree)} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Vêtements de professionnel',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreVetementProfessionnel}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreVetementProfessionnel * 100)/(nombreVetementAutre + nombreVetementPiece + nombreVetementBas + nombreVetementHaut + nombreVetementProfessionnel + nombreVetementSport + nombreVetementSoiree)} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Haut de vêtements',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreVetementHaut}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreVetementHaut * 100)/(nombreVetementAutre + nombreVetementPiece + nombreVetementBas + nombreVetementHaut + nombreVetementProfessionnel + nombreVetementSport + nombreVetementSoiree)} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Bas de vêtements',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreVetementBas}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreVetementBas * 100)/(nombreVetementAutre + nombreVetementPiece + nombreVetementBas + nombreVetementHaut + nombreVetementProfessionnel + nombreVetementSport + nombreVetementSoiree)} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Vêtements une pièce',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreVetementPiece}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreVetementPiece * 100)/(nombreVetementAutre + nombreVetementPiece + nombreVetementBas + nombreVetementHaut + nombreVetementProfessionnel + nombreVetementSport + nombreVetementSoiree)} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Autre',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreVetementAutre}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreVetementAutre * 100)/(nombreVetementAutre + nombreVetementPiece + nombreVetementBas + nombreVetementHaut + nombreVetementProfessionnel + nombreVetementSport + nombreVetementSoiree)} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: RotatedBox(
-                                  quarterTurns: -1,
-                                  child: Center(
-                                      child:
-                                      const FittedBox(child: const Text('Types de vêtements', style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold))))),
-                            )
-                          ],
+                              Stack(
+                                children: [
+                                  Container(
+                                    width: size.width * 0.27,
+                                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.horizontal(
+                                          right: Radius.circular(15)),
+                                      color: Styles.yellowColor,
+                                    ),
+                                    child: RotatedBox(
+                                        quarterTurns: -1,
+                                        child: Center(
+                                            child:
+                                            const FittedBox(child: const Text('Types de vêtements', style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold))))),
+                                  ),
+                                  Positioned(
+                                    top: 8,
+                                    right: 3,
+                                    child: Icon(Icons.arrow_forward, size: 24,),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -818,180 +946,205 @@ class _StatsState extends State<Stats> {
 
                     // Ou Acheter le produit
                     FittedBox(
-                      child: SizedBox(
-                        height: size.height * 0.44,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: size.width * 0.67,
-                              padding: const EdgeInsets.fromLTRB(16, 10, 0, 10),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.horizontal(
-                                    left: Radius.circular(15)),
-                                color: Styles.greenColor,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Chine',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombrePaysCHine}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombrePaysCHine * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Europe',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombrePaysEurope}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-
-
-
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombrePaysEurope * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Dubai',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombrePaysDubai}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-
-
-
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombrePaysDubai * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Turqui',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombrePaysTurqui}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombrePaysTurqui * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-
-                                  const Gap(10),
-                                  Text('Autre',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombrePaysAutres}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombrePaysAutres * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return DetailAutreScreen(
+                                  title: "Type de vêtements",
+                                  data: listLieuAchatAutre,
+                                  indicateur: "ou_achat_produit",
+                                );
+                              },
                             ),
-                            Container(
-                              width: size.width * 0.27,
-                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.horizontal(
-                                    right: Radius.circular(15)),
-                                color: Styles.yellowColor,
+                          );
+                        },
+                        child: SizedBox(
+                          height: size.height * 0.44,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: size.width * 0.67,
+                                padding: const EdgeInsets.fromLTRB(16, 10, 5, 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(15)),
+                                  color: Styles.greenColor,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Chine',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombrePaysCHine}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombrePaysCHine * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Europe',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombrePaysEurope}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+
+
+
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombrePaysEurope * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Dubai',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombrePaysDubai}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+
+
+
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombrePaysDubai * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Turqui',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombrePaysTurqui}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombrePaysTurqui * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+
+                                    const Gap(10),
+                                    Text('Autre',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombrePaysAutres}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombrePaysAutres * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: RotatedBox(
-                                  quarterTurns: -1,
-                                  child: Center(
-                                      child:
-                                      const FittedBox(child: const Text("Lieu d'achat des produits", style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold))))),
-                            )
-                          ],
+                              Stack(
+                                children: [
+                                  Container(
+                                    width: size.width * 0.27,
+                                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.horizontal(
+                                          right: Radius.circular(15)),
+                                      color: Styles.yellowColor,
+                                    ),
+                                    child: RotatedBox(
+                                        quarterTurns: -1,
+                                        child: Center(
+                                            child:
+                                            const FittedBox(child: const Text("Lieu d'achat des produits", style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold))))),
+                                  ),
+                                  Positioned(
+                                    top: 8,
+                                    right: 3,
+                                    child: Icon(Icons.arrow_forward, size: 24,),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -1632,93 +1785,118 @@ class _StatsState extends State<Stats> {
 
                     // Commentaire Client
                     FittedBox(
-                      child: SizedBox(
-                        height: size.height * 0.24,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: size.width * 0.67,
-                              padding: const EdgeInsets.fromLTRB(16, 10, 5, 10),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.horizontal(
-                                    left: Radius.circular(15)),
-                                color: Styles.greenColor,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('OUI',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreCommentaireOui}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreCommentaireOui * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-                                  const Gap(10),
-
-                                  Text('NON',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreCommentaireNon}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreCommentaireNon * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-                                ],
-                              ),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return DetailAutreScreen(
+                                  title: "Commentaire Client",
+                                  data: listCommentaireClient,
+                                  indicateur: "commentaire_client",
+                                );
+                              },
                             ),
-                            Container(
-                              width: size.width * 0.27,
-                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.horizontal(
-                                    right: Radius.circular(15)),
-                                color: Styles.yellowColor,
+                          );
+                        },
+                        child: SizedBox(
+                          height: size.height * 0.24,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: size.width * 0.67,
+                                padding: const EdgeInsets.fromLTRB(16, 10, 5, 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(15)),
+                                  color: Styles.greenColor,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('OUI',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreCommentaireOui}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreCommentaireOui * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+                                    const Gap(10),
+
+                                    Text('NON',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreCommentaireNon}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreCommentaireNon * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+                                  ],
+                                ),
                               ),
-                              child: RotatedBox(
-                                  quarterTurns: -1,
-                                  child: Center(
-                                      child:
-                                      const FittedBox(child: const Text("Commentaire client", style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold))))),
-                            )
-                          ],
+                              Stack(
+                                children: [
+                                  Container(
+                                    width: size.width * 0.27,
+                                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.horizontal(
+                                          right: Radius.circular(15)),
+                                      color: Styles.yellowColor,
+                                    ),
+                                    child: RotatedBox(
+                                        quarterTurns: -1,
+                                        child: Center(
+                                            child:
+                                            const FittedBox(child: const Text("Commentaire client", style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold))))),
+                                  ),
+                                  Positioned(
+                                    top: 8,
+                                    right: 3,
+                                    child: Icon(Icons.arrow_forward, size: 24,),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -1728,120 +1906,145 @@ class _StatsState extends State<Stats> {
 
                     // Commentaire Commercial
                     FittedBox(
-                      child: SizedBox(
-                        height: size.height * 0.28,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: size.width * 0.67,
-                              padding: const EdgeInsets.fromLTRB(16, 10, 5, 10),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.horizontal(
-                                    left: Radius.circular(15)),
-                                color: Styles.greenColor,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Client satisfait',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreCommentaireComercialSatisfait}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreCommentaireComercialSatisfait * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-                                  const Gap(10),
-
-                                  Text('Client difficile',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreCommentaireComercialDifficile}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreCommentaireComercialDifficile * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-                                  const Gap(10),
-
-                                  Text('Client non satisfait',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12)),
-                                  const Gap(5),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("${nombreCommentaireComercialNonSatisfait}",
-                                          style:
-                                          const TextStyle(color: Colors.white, fontSize: 15)),
-                                      Row(
-                                        children: [
-                                          Text("Pourcentage : ",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-
-                                          Text("${(nombreCommentaireComercialNonSatisfait * 100)/snapshot.data.documents.length} %",
-                                              style:
-                                              const TextStyle(color: Colors.white, fontSize: 15)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-                                ],
-                              ),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return DetailAutreScreen(
+                                  title: "Commentaire Commercial",
+                                  data: listCommentaireClient,
+                                  indicateur: "commentaire_commercial_text",
+                                );
+                              },
                             ),
-                            Container(
-                              width: size.width * 0.27,
-                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.horizontal(
-                                    right: Radius.circular(15)),
-                                color: Styles.yellowColor,
+                          );
+                        },
+                        child: SizedBox(
+                          height: size.height * 0.28,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: size.width * 0.67,
+                                padding: const EdgeInsets.fromLTRB(16, 10, 5, 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(15)),
+                                  color: Styles.greenColor,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Client satisfait',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreCommentaireComercialSatisfait}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreCommentaireComercialSatisfait * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+                                    const Gap(10),
+
+                                    Text('Client difficile',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreCommentaireComercialDifficile}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreCommentaireComercialDifficile * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+                                    const Gap(10),
+
+                                    Text('Client non satisfait',
+                                        style: TextStyle(
+                                            color: Colors.white.withOpacity(0.5),
+                                            fontSize: 12)),
+                                    const Gap(5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("${nombreCommentaireComercialNonSatisfait}",
+                                            style:
+                                            const TextStyle(color: Colors.white, fontSize: 15)),
+                                        Row(
+                                          children: [
+                                            Text("Pourcentage : ",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+
+                                            Text("${(nombreCommentaireComercialNonSatisfait * 100)/snapshot.data.documents.length} %",
+                                                style:
+                                                const TextStyle(color: Colors.white, fontSize: 15)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+
+                                  ],
+                                ),
                               ),
-                              child: RotatedBox(
-                                  quarterTurns: -1,
-                                  child: Center(
-                                      child:
-                                      const FittedBox(child: const Text("Commentaire du commercial", style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold))))),
-                            )
-                          ],
+                              Stack(
+                                children: [
+                                  Container(
+                                    width: size.width * 0.27,
+                                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.horizontal(
+                                          right: Radius.circular(15)),
+                                      color: Styles.yellowColor,
+                                    ),
+                                    child: RotatedBox(
+                                        quarterTurns: -1,
+                                        child: Center(
+                                            child:
+                                            const FittedBox(child: const Text("Commentaire du commercial", style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold))))),
+                                  ),
+                                  Positioned(
+                                    top: 8,
+                                    right: 3,
+                                    child: Icon(Icons.arrow_forward, size: 24,),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),

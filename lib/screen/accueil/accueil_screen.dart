@@ -3,6 +3,7 @@ import 'package:form_app/screen/accueil/profile_list_item.dart';
 import 'package:form_app/screen/donnee_analytique/analitique_screen.dart';
 import 'package:form_app/screen/formulaire/formulaire_screen.dart';
 import 'package:form_app/screen/historique_questionnaire/historique_screen.dart';
+import 'package:form_app/screen/map/map_screen.dart';
 import 'package:form_app/screen/page_debut/login_screen.dart';
 import 'package:form_app/screen/page_debut/widgets/my_header.dart';
 import 'package:form_app/screen/statistiques/statistiques_screen.dart';
@@ -94,14 +95,63 @@ class _ProfileListItemsState extends State<ProfileListItems> {
               text: 'Nouveau Questionnaire',
             ),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return FormulaireScreen();
-                  },
-                ),
-              );
+
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Center(child: Text('Localisation nécessaire')),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(
+                            child: Text(
+                              "Bellone collecte des données de localisation pour permettre de reccupérer votre position avec précision même lorsque l'appli est fermée ou non utilisée.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                FlatButton(
+                                    child: Text('Continuer', style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.green
+                                    ),),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return FormulaireScreen();
+                                          },
+                                        ),
+                                      );
+                                    }),
+                                FlatButton(
+                                    child: Text('Fermer', style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.red
+                                    )),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    })
+                              ])
+                        ],
+                      ),
+                    );
+                  });
+
+
             },
           ),
           GestureDetector(
@@ -134,6 +184,72 @@ class _ProfileListItemsState extends State<ProfileListItems> {
             child: ProfileListItem(
               icon: LineAwesomeIcons.cloud_with_moon_and_rain,
               text: 'Données Analytiques',
+            ),
+          ) : Container(),
+          statut == "Admin" ? GestureDetector(
+            onTap: () {
+
+
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Center(child: Text('Localisation nécessaire')),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(
+                            child: Text(
+                              "Bellone collecte des données de localisation pour permettre de reccupérer votre position avec précision même lorsque l'appli est fermée ou non utilisée.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                FlatButton(
+                                    child: Text('Continuer', style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.green
+                                    ),),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return MapScreen();
+                                          },
+                                        ),
+                                      );
+                                    }),
+                                FlatButton(
+                                    child: Text('Fermer', style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.red
+                                    )),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    })
+                              ])
+                        ],
+                      ),
+                    );
+                  });
+
+
+            },
+            child: ProfileListItem(
+              icon: LineAwesomeIcons.map,
+              text: "Lieux d'enregistrement",
             ),
           ) : Container(),
           GestureDetector(

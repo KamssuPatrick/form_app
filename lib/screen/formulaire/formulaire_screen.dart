@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_app/screen/accueil/accueil_screen.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:survey_kit/survey_kit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,6 +32,10 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
   String echelle_satisfaction;
   String commentaire_a_faire, commentaire;
   String commentaire_commercial;
+  var latitude;
+  var longitude;
+  var position;
+  var locationMessage = "";
 
 
   String userEmail, userUid, userDocument;
@@ -69,6 +74,7 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
     // TODO: implement initState
     super.initState();
     // getUserInfo();
+    getCurrentLocation();
 
   }
 
@@ -77,6 +83,21 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
         content:
         Text("Formulaire Enregistré avec succès !"));
     _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  void getCurrentLocation() async {
+    position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    var lats = position.latitude;
+    var longs = position.longitude;
+
+    setState(() {
+      locationMessage = "latitude : $lats and longitude: $longs";
+
+      latitude = lats;
+      longitude = longs;
+    });
+
+    print("**********Location ${locationMessage}");
   }
 
   getUserInfo () async
@@ -212,25 +233,21 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
                         "commentaire_commercial": _valuesResult[13],
                         "commentaire_commercial_text": _valuesResult[14],
                         "userUid": userUid,
+                        "position": GeoPoint(latitude, longitude),
                         "userDocument": userDocument,
                         "email": userEmail,
                         'temps_ajout': DateTime.now().millisecondsSinceEpoch,
                       };
 
 
-
+                      print("______________ ${formulaireMap}");
                       Firestore.instance
                           .collection("formulaire")
                           .add(formulaireMap).then((value) {
                         // Fluttertoast.showToast(msg: "Formulaire Enregistré avec succès !", toastLength: Toast.LENGTH_LONG);
+                        print("______________ Snack ${value.hashCode}");
 
-                        _displaySnackBar(context);
-                      })
-                          .catchError((e) {
-                        print(e.toString());
-                      });
-
-                      if(result.finishReason.toString() == "FinishReason.COMPLETED")
+                        if(result.finishReason.toString() == "FinishReason.COMPLETED")
                         {
                           Navigator.pushAndRemoveUntil(
                             context,
@@ -241,6 +258,13 @@ class _FormulaireScreenState extends State<FormulaireScreen> {
                             ModalRoute.withName('/'),
                           );
                         }
+                        // _displaySnackBar(context);
+                      })
+                          .catchError((e) {
+                        print("______________Erreur ${e.toString()}");
+                      });
+
+
 
                     },
                     task: task,

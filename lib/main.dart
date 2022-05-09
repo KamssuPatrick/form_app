@@ -10,12 +10,12 @@ Future  main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  await initialization(null);
+  // await initialization(null);
   runApp(const MyApp());
 }
 
 Future initialization(BuildContext context) async {
-  await Future.delayed(Duration(seconds: 3));
+  await Future.delayed(Duration(seconds: 2));
 }
 
 class MyApp extends StatelessWidget {

@@ -291,7 +291,7 @@ class _loginScreenState extends State<loginScreen> {
                     fontFamily: "Poppins",
                     fontSize: ScreenUtil().setSp(26))),
             TextFormField(
-              obscureText: true,
+              obscureText: passwordInvisible,
               controller: _controllerPassword,
               decoration: InputDecoration(
                   errorText: _validatePassword ? 'Ce champ ne peut être vide' : null,
@@ -301,7 +301,13 @@ class _loginScreenState extends State<loginScreen> {
                           ? Icons.visibility_off
                           : Icons.visibility,
                       color: Colors.black,
-                    ), onPressed: () {  },
+                    ), onPressed: () {
+
+                      print("icici");
+                      setState(() {
+                        passwordInvisible = !passwordInvisible;
+                      });
+                  },
                   ),
                   hintText: "Entrez votre mot de passe",
                   hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
